@@ -14,6 +14,7 @@ import commands2.cmd
 import constants
 
 from subsystems.drivesubsys import DriveSubsystem
+from subsystems.shootsubsys import ShootSubsystem
 
 
 class RobotContainer:
@@ -27,6 +28,7 @@ class RobotContainer:
     def __init__(self) -> None:
         # The robot's subsystems
         self.driveSubsystem = DriveSubsystem()
+        self.shootSubsystem = ShootSubsystem()
 
         # The driver's controller
         self.driverController = commands2.button.CommandXboxController(
@@ -71,6 +73,15 @@ class RobotContainer:
             ) \
             .onFalse(
                 commands2.cmd.runOnce(lambda: self.driveSubsystem.setMaxOutput(1))
+            )
+            
+        self.driverController.rightTrigger() \
+            .onChange(
+                commands2.cmd.runOnce(
+                    lambda: self.shootSubsystem.setMotorSpeed(
+                        self.driverController.getRightTriggerAxis()
+                    )
+                )
             )
         
         # self.driverController.rightTrigger() \

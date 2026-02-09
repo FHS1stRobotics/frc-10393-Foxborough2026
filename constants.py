@@ -18,6 +18,8 @@ kLeftMotor2Port = 1
 kRightMotor1Port = 2
 kRightMotor2Port = 3
 
+kShootMotorPort = 4
+
 # Encoders
 kLeftEncoderPorts = (0, 1)
 kRightEncoderPorts = (2, 3)

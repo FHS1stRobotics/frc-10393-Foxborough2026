@@ -6,13 +6,18 @@
 
 import commands2
 import wpilib
+from rev import SparkMax
 
 import constants as const
 
 
-class DriveSubsystem(commands2.Subsystem):
+class ShootSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         super().__init__()
-
-    def methodsgohere(self):
-        pass
+        
+        self.motor = SparkMax(const.kShootMotorPort, SparkMax.MotorType.kBrushless)
+        
+        self.motor.setInverted(False) # set to True if necessary
+        
+    def setMotorSpeed(self, speed: float):
+        self.motor.set(speed)

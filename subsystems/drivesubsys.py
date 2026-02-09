@@ -7,8 +7,12 @@
 import commands2
 import wpilib
 import wpilib.drive
-import rev
-from rev import SparkMax, SparkLowLevel, SparkBaseConfig, ResetMode, PersistMode
+from rev import (
+    SparkMax, 
+    SparkBaseConfig, 
+    ResetMode, 
+    PersistMode
+)
 import constants as const
 
 
