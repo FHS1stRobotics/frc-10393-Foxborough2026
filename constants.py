@@ -10,7 +10,6 @@
 #
 
 import math
-import wpilib
 
 # Motors
 kLeftMotor1Port = 7
@@ -18,7 +17,12 @@ kLeftMotor2Port = 6
 kRightMotor1Port = 2
 kRightMotor2Port = 3
 
-kShootMotorPort = 4
+# shooting motor ids
+# each sparkmax id will be automatically registered in the code
+# without any additional configuration
+kShootMotorPorts = (0, 1, 100)
+
+kClimbingArmMotorPort = 4
 
 # Encoders
 kLeftEncoderPorts = (0, 1)
@@ -31,26 +35,8 @@ kWheelDiameterInches = 6
 # Assumes the encoders are directly mounted on the wheel shafts
 kEncoderDistancePerPulse = (kWheelDiameterInches * math.pi) / kEncoderCPR
 
-# Hatch
-kHatchSolenoidModuleType = wpilib.PneumaticsModuleType.CTREPCM
-kHatchSolenoidModule = 0
-kHatchSolenoidPorts = (0, 1)
-
-# Autonomous
-kAutoDriveDistanceInches = 60
-kAutoBackupDistanceInches = 20
-kAutoDriveSpeed = 0.5
-
 # Operator Interface
 kDriverControllerPort = 0
 
 # Webcam
 kWebcamID = 0
-
-# Physical parameters
-kDriveTrainMotorCount = 2
-kTrackWidth = 0.381 * 2
-kGearingRatio = 8
-kWheelRadius = 0.0508
-
-# kEncoderResolution = -

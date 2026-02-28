@@ -5,7 +5,6 @@
 #
 
 import wpilib
-from wpilib.interfaces import GenericHID
 
 import commands2
 import commands2.button
@@ -15,6 +14,7 @@ import constants
 
 from subsystems.drivesubsys import DriveSubsystem
 from subsystems.shootsubsys import ShootSubsystem
+from subsystems.armsubsys import ArmSubsystem
 
 
 class RobotContainer:
@@ -29,6 +29,7 @@ class RobotContainer:
         # The robot's subsystems
         self.driveSubsystem = DriveSubsystem()
         self.shootSubsystem = ShootSubsystem()
+        self.armSubsystem = ArmSubsystem()
 
         # The driver's controller
         self.driverController = commands2.button.CommandXboxController(
@@ -64,8 +65,7 @@ class RobotContainer:
         instantiating a :GenericHID or one of its subclasses (Joystick or XboxController),
         and then passing it to a JoystickButton.
         """
-
-        # While holding R1, drive at half speed
+        # limits max output to half when pressing x
         # are backslashes more readable?
         self.driverController.x() \
             .onTrue(
@@ -75,21 +75,26 @@ class RobotContainer:
                 commands2.cmd.runOnce(lambda: self.driveSubsystem.setMaxOutput(1))
             )
             
+        self.driverController.a() \
+            .onTrue(
+                commands2.cmd.run(
+                    lambda: self.armSubsystem.setMotorSpeedForTime(
+                        timeSeconds=1.0,
+                        speed=1.0
+                    ),
+                    self.armSubsystem
+                )
+            )
+            
         self.driverController.rightTrigger() \
             .onChange(
                 commands2.cmd.runOnce(
-                    lambda: self.shootSubsystem.setMotorSpeed(
+                    lambda: self.shootSubsystem.setAllMotorSpeed(
                         self.driverController.getRightTriggerAxis()
-                    )
+                    ),
+                    self.shootSubsystem
                 )
             )
-        
-        # self.driverController.rightTrigger() \
-        #     .onTrue(
-                
-        #     ).onFalse(
-
-        #     )
 
     def getAutonomousCommand(self) -> commands2.Command:
         return self.chooser.getSelected()

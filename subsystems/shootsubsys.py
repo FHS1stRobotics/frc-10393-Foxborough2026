@@ -6,7 +6,6 @@
 
 import commands2
 from rev import SparkMax
-
 import constants as const
 
 
@@ -14,9 +13,18 @@ class ShootSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         super().__init__()
         
-        self.motor = SparkMax(const.kShootMotorPort, SparkMax.MotorType.kBrushless)
+        # dictionary that binds each motor ID to its sparkmax object
+        self.motor_lookup: dict[int, SparkMax] = {
+            port: SparkMax(port, SparkMax.MotorType.kBrushless)
+            for port in const.kShootMotorPorts
+        }
         
-        self.motor.setInverted(False) # set to True if necessary
+        for motor in self.motor_lookup.values():
+            motor.setInverted(False)
         
-    def setMotorSpeed(self, speed: float):
-        self.motor.set(speed)
+    def setMotorSpeed(self, motorPort: int, speed: float):
+        self.motor_lookup[motorPort].set(speed)
+    
+    def setAllMotorSpeed(self, speed: float):
+        for motor in self.motor_lookup.values():
+            motor.set(speed)
