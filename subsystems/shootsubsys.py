@@ -5,7 +5,6 @@
 #
 
 import commands2
-import wpilib
 from rev import SparkMax
 
 import constants as const

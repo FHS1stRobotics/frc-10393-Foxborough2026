@@ -2,6 +2,7 @@
 - Image roborio
 - Install python on roborio
 - Try to install the rev thing onto the roborio
+- Pushups
 
 # Functions
 Features

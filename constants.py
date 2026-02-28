@@ -13,8 +13,8 @@ import math
 import wpilib
 
 # Motors
-kLeftMotor1Port = 0
-kLeftMotor2Port = 1
+kLeftMotor1Port = 7
+kLeftMotor2Port = 6
 kRightMotor1Port = 2
 kRightMotor2Port = 3
 
@@ -43,6 +43,9 @@ kAutoDriveSpeed = 0.5
 
 # Operator Interface
 kDriverControllerPort = 0
+
+# Webcam
+kWebcamID = 0
 
 # Physical parameters
 kDriveTrainMotorCount = 2
