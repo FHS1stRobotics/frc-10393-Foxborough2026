@@ -18,8 +18,10 @@ class ArmSubsystem(commands2.Subsystem):
         
         self.motor.setInverted(False)
         
-    def setMotorSpeed(self, speed: float):
-        self.motor.set(speed)
+    def setMotorSpeed(self, speed: float) -> commands2.Command:
+        return commands2.cmd.runOnce(
+            lambda: self.motor.set(speed)
+        )
     
     def setMotorSpeedForTime(self, timeSeconds: float, speed: float):
         self.motor.set(speed)

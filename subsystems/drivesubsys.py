@@ -26,19 +26,17 @@ class DriveSubsystem(commands2.Subsystem):
         self.right2 = SparkMax(const.kRightMotor2Port, type=SparkMax.MotorType.kBrushed)
         
         # Configure left2 to follow left1
-        cfg = SparkBaseConfig()
-        cfg.follow(const.kLeftMotor1Port)  # Tell this controller to follow left1’s CAN ID
+        cfg = SparkBaseConfig().follow(const.kLeftMotor1Port)  # Tell this controller to follow left1’s CAN ID
         self.left2.configure(cfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
 
         # Configure right2 to follow right1
-        cfg = SparkBaseConfig()
-        cfg.follow(const.kRightMotor1Port)
+        cfg = SparkBaseConfig().follow(const.kRightMotor1Port)
         self.right2.configure(cfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
-
+        
         # We need to invert one side of the drivetrain so that positive speeds
         # result in both sides moving forward. Depending on how your robot's
         # drivetrain is constructed, you might have to invert the left side instead.
-        self.right1.setInverted(True)
+        self.left1.setInverted(True)
 
         # The robot's drive
         self.drive = wpilib.drive.DifferentialDrive(self.left1, self.right1)
@@ -59,14 +57,14 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftEncoder.setDistancePerPulse(const.kEncoderDistancePerPulse)
         self.rightEncoder.setDistancePerPulse(const.kEncoderDistancePerPulse)
 
-    def arcadeDrive(self, fwd: float, rot: float) -> None:
+    def tankDrive(self, leftSpeed: float, rightSpeed: float) -> None:
         """
         Drives the robot using arcade controls.
 
-        :param fwd: the commanded forward movement
-        :param rot: the commanded rotation
+        :param leftSpeed: the commanded movement of the left side
+        :param rightSpeed: the commanded movement of the right side
         """
-        self.drive.arcadeDrive(fwd, rot)
+        self.drive.tankDrive(leftSpeed, rightSpeed)
 
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""

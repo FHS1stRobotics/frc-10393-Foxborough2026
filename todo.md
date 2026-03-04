@@ -1,7 +1,5 @@
 # steps
-- Image roborio
-- Install python on roborio
-- Try to install the rev thing onto the roborio
+- actually use the venv :DDDDDDD
 - Pushups
 
 # Functions

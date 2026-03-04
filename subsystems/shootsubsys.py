@@ -19,11 +19,13 @@ class ShootSubsystem(commands2.Subsystem):
             for port in const.kShootMotorPorts
         }
         
-        for motor in self.motor_lookup.values():
-            motor.setInverted(False)
+        # for motor in self.motor_lookup.values():
+        #     motor.setInverted(True)
         
-    def setMotorSpeed(self, motorPort: int, speed: float):
-        self.motor_lookup[motorPort].set(speed)
+    def setMotorSpeed(self, motorPort: int, speed: float) -> commands2.Command:
+        return commands2.cmd.runOnce(
+            lambda: self.motor_lookup[motorPort].set(speed)
+        )
     
     def setAllMotorSpeed(self, speed: float):
         for motor in self.motor_lookup.values():

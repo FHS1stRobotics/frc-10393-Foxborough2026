@@ -15,6 +15,6 @@ for dirpath, dirnames, filenames in os.walk('.'):
         deleted += 1
 
 if deleted:
-    print(f"{deleted} cache folders deleted!")
+    print(f"{deleted:,} cache folders deleted!")
 else:
     print("There were no cache folders found.")

@@ -12,23 +12,23 @@
 import math
 
 # Motors
-kLeftMotor1Port = 7
-kLeftMotor2Port = 6
-kRightMotor1Port = 2
-kRightMotor2Port = 3
+kLeftMotor1Port = 2
+kLeftMotor2Port = 3
+kRightMotor1Port = 6
+kRightMotor2Port = 7
 
 # shooting motor ids
 # each sparkmax id will be automatically registered in the code
 # without any additional configuration
-kShootMotorPorts = (0, 1, 100)
+kShootMotorPorts = (19, 16, 5)
 
 kClimbingArmMotorPort = 4
 
 # Encoders
-kLeftEncoderPorts = (0, 1)
-kRightEncoderPorts = (2, 3)
-kLeftEncoderReversed = False
-kRightEncoderReversed = True
+kLeftEncoderPorts = (2, 3)
+kRightEncoderPorts = (6, 7)
+kLeftEncoderReversed = True
+kRightEncoderReversed = False
 
 kEncoderCPR = 1024
 kWheelDiameterInches = 6

@@ -16,6 +16,9 @@ from subsystems.drivesubsys import DriveSubsystem
 from subsystems.shootsubsys import ShootSubsystem
 from subsystems.armsubsys import ArmSubsystem
 
+import commands.shootcmds
+import commands.armcmds
+
 
 class RobotContainer:
     """
@@ -30,6 +33,9 @@ class RobotContainer:
         self.driveSubsystem = DriveSubsystem()
         self.shootSubsystem = ShootSubsystem()
         self.armSubsystem = ArmSubsystem()
+        
+        self.shootSetAllMotorSpeed = commands.shootcmds.ShootCommands.setAllMotorSpeed
+        self.setArmMotorSpeedForTime = commands.armcmds.ArmCommands.setMotorSpeedForTime
 
         # The driver's controller
         self.driverController = commands2.button.CommandXboxController(
@@ -40,14 +46,12 @@ class RobotContainer:
         self.configureButtonBindings()
 
         # Configure default commands
-        # Set the default drive command to split-stick arcade drive
+        # Set the default drive command to tank drive
         self.driveSubsystem.setDefaultCommand(
-            # A split-stick arcade command, with forward/backward controlled by the left
-            # hand, and turning controlled by the right.
             commands2.cmd.run(
-                lambda: self.driveSubsystem.arcadeDrive(
+                lambda: self.driveSubsystem.tankDrive(
                     -self.driverController.getLeftY(),
-                    -self.driverController.getRightX(),
+                    -self.driverController.getRightY(),
                 ),
                 self.driveSubsystem,
             )
@@ -77,24 +81,37 @@ class RobotContainer:
             
         self.driverController.a() \
             .onTrue(
-                commands2.cmd.run(
-                    lambda: self.armSubsystem.setMotorSpeedForTime(
-                        timeSeconds=1.0,
-                        speed=1.0
-                    ),
-                    self.armSubsystem
+                self.armSubsystem.setMotorSpeed(
+                    speed=-1.0
+                )
+            ) \
+            .onFalse(
+                self.armSubsystem.setMotorSpeed(
+                    speed=0.0
+                )
+            )
+            
+        self.driverController.b() \
+            .onTrue(
+                self.armSubsystem.setMotorSpeed(
+                    speed=1.0
+                )
+            ) \
+            .onFalse(
+                self.armSubsystem.setMotorSpeed(
+                    speed=0.0
                 )
             )
             
         self.driverController.rightTrigger() \
             .onChange(
-                commands2.cmd.runOnce(
-                    lambda: self.shootSubsystem.setAllMotorSpeed(
-                        self.driverController.getRightTriggerAxis()
-                    ),
-                    self.shootSubsystem
+                self.shootSetAllMotorSpeed(
+                    self.shootSubsystem, 
+                    self.driverController.getRightTriggerAxis()
                 )
             )
+            
+        self.driverController.leftTrigger()
 
     def getAutonomousCommand(self) -> commands2.Command:
         return self.chooser.getSelected()
