@@ -10,33 +10,40 @@ import wpilib.drive
 from rev import (
     SparkMax, 
     SparkBaseConfig, 
+    SparkMaxConfig,
     ResetMode, 
     PersistMode
 )
-import constants as const
+from phoenix6 import (
+    hardware,
+    controls,
+    configs
+)
 
+import constants as const
 
 class DriveSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         super().__init__()
         
-        self.left1 = SparkMax(const.kLeftMotor1Port, type=SparkMax.MotorType.kBrushed)
-        self.left2 = SparkMax(const.kLeftMotor2Port, type=SparkMax.MotorType.kBrushed)
-        self.right1 = SparkMax(const.kRightMotor1Port, type=SparkMax.MotorType.kBrushed)
-        self.right2 = SparkMax(const.kRightMotor2Port, type=SparkMax.MotorType.kBrushed)
+        self.left1 = SparkMax(const.kLeftMotor1Port, type=SparkMax.MotorType.kBrushless)
+        self.left2 = SparkMax(const.kLeftMotor2Port, type=SparkMax.MotorType.kBrushless)
+        self.right1 = SparkMax(const.kRightMotor1Port, type=SparkMax.MotorType.kBrushless)
+        self.right2 = SparkMax(const.kRightMotor2Port, type=SparkMax.MotorType.kBrushless)
         
-        # Configure left2 to follow left1
+        # Configure left2 to follow left1        
+        cfg = SparkMaxConfig().inverted(const.kLeftEncoderReversed)
+        self.left1.configure(cfg,  ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
+        
         cfg = SparkBaseConfig().follow(const.kLeftMotor1Port)  # Tell this controller to follow left1’s CAN ID
         self.left2.configure(cfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
 
-        # Configure right2 to follow right1
-        cfg = SparkBaseConfig().follow(const.kRightMotor1Port)
-        self.right2.configure(cfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
+        # Configure right2 to follow right1        
+        cfg = SparkMaxConfig().inverted(const.kRightEncoderReversed)
+        self.right1.configure(cfg,  ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
         
-        # We need to invert one side of the drivetrain so that positive speeds
-        # result in both sides moving forward. Depending on how your robot's
-        # drivetrain is constructed, you might have to invert the left side instead.
-        self.left1.setInverted(True)
+        cfg = SparkBaseConfig().follow(const.kRightMotor1Port)  
+        self.right2.configure(cfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
 
         # The robot's drive
         self.drive = wpilib.drive.DifferentialDrive(self.left1, self.right1)
@@ -56,15 +63,26 @@ class DriveSubsystem(commands2.Subsystem):
         # Sets the distance per pulse for the encoders
         self.leftEncoder.setDistancePerPulse(const.kEncoderDistancePerPulse)
         self.rightEncoder.setDistancePerPulse(const.kEncoderDistancePerPulse)
+        
+        # Vex falcon
+        self.falconMotor = hardware.TalonFX(10)
+        falcon_configs = configs.MotorOutputConfigs()
+        self.falconMotor.configurator.apply(falcon_configs)
+        self.falconRequest = controls.DutyCycleOut(0)       
 
     def tankDrive(self, leftSpeed: float, rightSpeed: float) -> None:
         """
-        Drives the robot using arcade controls.
+        Drives the robot using tank controls.
 
         :param leftSpeed: the commanded movement of the left side
         :param rightSpeed: the commanded movement of the right side
         """
-        self.drive.tankDrive(leftSpeed, rightSpeed)
+        l = max(min(leftSpeed * leftSpeed, 1.0), -1.0)
+        l = -l if leftSpeed < 0 else l
+        r = max(min(rightSpeed * rightSpeed, 1.0), -1.0)
+        r = -r if rightSpeed < 0 else r
+                
+        self.drive.tankDrive(-l, -r)
 
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""
@@ -81,3 +99,7 @@ class DriveSubsystem(commands2.Subsystem):
         drive to drive more slowly.
         """
         self.drive.setMaxOutput(maxOutput)
+        
+    def tweakFalcon(self, value: float):
+        self.falconRequest.output = value
+        self.falconMotor.set_control(self.falconRequest)

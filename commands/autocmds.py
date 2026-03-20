@@ -5,12 +5,13 @@
 #
 
 import commands2
-from rev import SparkMax
-import constants as const
-from time import sleep
+import commands2.cmd
 
-class AutoSubsystem(commands2.Subsystem):
+from subsystems.armsubsys import ArmSubsystem
+
+
+class AutoCommands:
     def __init__(self) -> None:
-        super().__init__()
-        
+        raise Exception("This is a utility class!")
+
     

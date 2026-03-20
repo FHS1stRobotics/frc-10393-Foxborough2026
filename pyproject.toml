@@ -6,6 +6,7 @@
 [tool.robotpy]
 
 # Version of robotpy this project depends on
+# - phoenix6 seems to dislike 2026.2.2
 robotpy_version = "2026.2.1.1"
 
 # Which optional robotpy components should be installed?
@@ -16,4 +17,4 @@ components = [
 
 # Other pip packages to install, such as vendor packages (each element
 # is equivalent to a line in requirements.txt)
-requires = ["robotpy-rev"]
+requires = ["robotpy-rev","phoenix6"]

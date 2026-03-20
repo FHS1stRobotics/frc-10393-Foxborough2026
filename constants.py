@@ -12,26 +12,31 @@
 import math
 
 # Motors
-kLeftMotor1Port = 2
-kLeftMotor2Port = 3
-kRightMotor1Port = 6
-kRightMotor2Port = 7
+kLeftMotor1Port = 6
+kLeftMotor2Port = 7
+kRightMotor1Port = 2
+kRightMotor2Port = 3
 
 # shooting motor ids
 # each sparkmax id will be automatically registered in the code
 # without any additional configuration
-kShootMotorPorts = (19, 16, 5)
+kShootMotorPorts = (19, 16, 1)
+kShootMotorInvert = (False, True, True)
+kShootMotorScale = (1.0, 1.0, 1.0)
 
+# Motor index 10 is the Vex
 kClimbingArmMotorPort = 4
+kClimbingArmMotorInvert = False
 
 # Encoders
 kLeftEncoderPorts = (2, 3)
+kLeftEncoderReversed = False
 kRightEncoderPorts = (6, 7)
-kLeftEncoderReversed = True
-kRightEncoderReversed = False
+kRightEncoderReversed = True
 
 kEncoderCPR = 1024
 kWheelDiameterInches = 6
+
 # Assumes the encoders are directly mounted on the wheel shafts
 kEncoderDistancePerPulse = (kWheelDiameterInches * math.pi) / kEncoderCPR
 

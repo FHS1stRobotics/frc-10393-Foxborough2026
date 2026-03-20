@@ -26,12 +26,14 @@ class OurRobot(commands2.TimedCommandRobot):
         # Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         # autonomous chooser on the dashboard.
         self.container = RobotContainer()
+        
+        wpilib.CameraServer().launch()
 
     def robotPeriodic(self) -> None:
         """This function is called periodically whenever the robot is on"""
         
-        # print(f"LEFT: {self.container.driverController.getLeftTriggerAxis()}")
-        # print(f"RIGHT: {self.container.driverController.getRightTriggerAxis()}")
+        #print(f"LEFT: {self.container.driverController.getLeftTriggerAxis()}")
+        #print(f"RIGHT: {self.container.driverController.getRightTriggerAxis()}")
     
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""

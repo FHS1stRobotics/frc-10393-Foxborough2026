@@ -5,18 +5,23 @@
 #
 
 import commands2
-from rev import SparkMax
+from rev import (
+    SparkMax, 
+    SparkMaxConfig,
+    ResetMode, 
+    PersistMode
+)
+
 import constants as const
 from time import sleep
-
 
 class ArmSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         super().__init__()
         
-        self.motor = SparkMax(const.kClimbingArmMotorPort, SparkMax.MotorType.kBrushless)
-        
-        self.motor.setInverted(False)
+        self.motor = SparkMax(const.kClimbingArmMotorPort, SparkMax.MotorType.kBrushless)    
+        cfg = SparkMaxConfig().inverted(const.kClimbingArmMotorInvert)
+        self.motor.configure(cfg,  ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
         
     def setMotorSpeed(self, speed: float) -> commands2.Command:
         return commands2.cmd.runOnce(

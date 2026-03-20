@@ -5,28 +5,37 @@
 #
 
 import commands2
-from rev import SparkMax
-import constants as const
+from rev import (
+    SparkMax, 
+    SparkMaxConfig,
+    ResetMode, 
+    PersistMode
+)
 
+import constants as const
 
 class ShootSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         super().__init__()
         
         # dictionary that binds each motor ID to its sparkmax object
-        self.motor_lookup: dict[int, SparkMax] = {
-            port: SparkMax(port, SparkMax.MotorType.kBrushless)
-            for port in const.kShootMotorPorts
-        }
-        
-        # for motor in self.motor_lookup.values():
-        #     motor.setInverted(True)
-        
+        self.motor_lookup = {}
+        for idx in range(len(const.kShootMotorPorts)):
+            port = const.kShootMotorPorts[idx]
+            motor = SparkMax(port, SparkMax.MotorType.kBrushless)   
+            
+            cfg = SparkMaxConfig().inverted(const.kShootMotorInvert[idx])
+            motor.configure(cfg,  ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
+            
+            self.motor_lookup[port] = motor    
+            print(f"MOTOR: {motor.getDeviceId()}");
+            
     def setMotorSpeed(self, motorPort: int, speed: float) -> commands2.Command:
         return commands2.cmd.runOnce(
-            lambda: self.motor_lookup[motorPort].set(speed)
+            lambda: self.motor_lookup[motorPort].set(speed * const.kShootMotorScale[motorPort])
         )
     
     def setAllMotorSpeed(self, speed: float):
-        for motor in self.motor_lookup.values():
-            motor.set(speed)
+        for idx in self.motor_lookup.keys():
+            self.motor_lookup[idx].set(speed)
+            print(F"idx:{idx} speed:{speed}")
