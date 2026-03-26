@@ -54,21 +54,26 @@ class RobotContainer:
     
         # Configure default commands
         # Set the default drive command to tank drive
-        self.driveSubsystem.setDefaultCommand(
-            commands2.cmd.run(
+        self.driveSubsystem.setDefaultCommand(self.buildTankDriveCommand());
+        
+        # Smart Dashboard Chooser
+        self.defaultAuto = commands2.cmd.run(lambda: self.driveSubsystem.tankDrive(0.05, 0.05), self.driveSubsystem)
+        self.anotherAuto = commands2.cmd.run(lambda: self.driveSubsystem.tankDrive(-0.05, -0.05), self.driveSubsystem)
+        self.chooser = wpilib.SendableChooser()
+        self.chooser.setDefaultOption("Default Auto", self.defaultAuto)
+        self.chooser.addOption("Another auto",self.anotherAuto)
+
+        # Put the chooser on the dashboard
+        wpilib.SmartDashboard.putData("Autonomous Commands", self.chooser)
+        
+    def buildTankDriveCommand(self) -> commands2.Command:
+        return commands2.cmd.run(
                 lambda: self.driveSubsystem.tankDrive(
                     self.driverController.getLeftY(),
                     self.driverController.getRightY(),
                 ),
                 self.driveSubsystem,
             )
-        )
-
-        # Chooser
-        self.chooser = wpilib.SendableChooser()
-
-        # Put the chooser on the dashboard
-        wpilib.SmartDashboard.putData("Autonomous", self.chooser)
         
     def configureButtonBindings(self):
         """
@@ -97,14 +102,7 @@ class RobotContainer:
                     speed=0.0
                 )
             )
-            
-        self.driverController.x() \
-            .onTrue(
-                 commands2.cmd.runOnce(
-                    lambda: self.shootSubsystem.setAllMotorSpeed(1.0 if self.toggleShooter() else 0.0)
-                )
-            )
-            
+        
         self.driverController.b() \
             .onTrue(
                 self.armSubsystem.setMotorSpeed(
@@ -115,6 +113,13 @@ class RobotContainer:
                 self.armSubsystem.setMotorSpeed(
                     speed=0.0
                 )
+            )    
+        
+        self.driverController.x() \
+            .onTrue(
+                 commands2.cmd.runOnce(
+                    lambda: self.shootSubsystem.setAllMotorSpeed(1.0 if self.toggleShooter() else 0.0)
+                )
             )
             
         self.driverController.rightTrigger(0.3) \
@@ -122,20 +127,22 @@ class RobotContainer:
                 commands2.cmd.repeatingSequence(self.feedCommand)
             ) \
             .toggleOnFalse(         
-                commands2.cmd.runOnce(lambda : self.feedCommand.end(False))
+                commands2.cmd.runOnce(lambda: self.feedCommand.end(False))
             )
             
-        self.driverController.rightBumper() \
-            .onTrue(
-                commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(0.5))
-            ) \
-            .onFalse(
-                commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(0.0))
-            )
+        # self.driverController.rightBumper() \
+        #     .onTrue(
+        #         commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(0.5))
+        #     ) \
+        #     .onFalse(
+        #         commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(0.0))
+        #     )
             
     def toggleShooter(self) -> bool:
         self.shooterOn = not self.shooterOn
         return self.shooterOn
 
     def getAutonomousCommand(self) -> commands2.Command:
-        return self.chooser.getSelected()
+        return commands2.cmd.run(
+            lambda: self.driveSubsystem.tankDrive(-0.05, -0.05), 
+            self.driveSubsystem)

@@ -17,4 +17,4 @@ components = [
 
 # Other pip packages to install, such as vendor packages (each element
 # is equivalent to a line in requirements.txt)
-requires = ["robotpy-rev","phoenix6"]
+requires = ["robotpy-rev", "opencv-python", "phoenix6", "robotpy-navx"]

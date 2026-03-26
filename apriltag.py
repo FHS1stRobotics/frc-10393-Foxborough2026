@@ -21,6 +21,7 @@ import numpy as np
 
 
 def main():
+    return # for now ...
     detector = robotpy_apriltag.AprilTagDetector()
 
     # Look for tag36h11, correct 3 error bits

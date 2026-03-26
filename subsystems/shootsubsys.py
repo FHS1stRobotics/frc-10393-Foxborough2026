@@ -20,6 +20,7 @@ class ShootSubsystem(commands2.Subsystem):
         
         # dictionary that binds each motor ID to its sparkmax object
         self.motor_lookup = {}
+        
         for idx in range(len(const.kShootMotorPorts)):
             port = const.kShootMotorPorts[idx]
             motor = SparkMax(port, SparkMax.MotorType.kBrushless)   
@@ -28,7 +29,7 @@ class ShootSubsystem(commands2.Subsystem):
             motor.configure(cfg,  ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
             
             self.motor_lookup[port] = motor    
-            print(f"MOTOR: {motor.getDeviceId()}");
+            print(f"MOTOR: {motor.getDeviceId()}")
             
     def setMotorSpeed(self, motorPort: int, speed: float) -> commands2.Command:
         return commands2.cmd.runOnce(

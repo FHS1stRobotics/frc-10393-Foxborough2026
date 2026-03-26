@@ -18,17 +18,16 @@ kRightMotor1Port = 2
 kRightMotor2Port = 3
 
 # shooting motor ids
-# each sparkmax id will be automatically registered in the code
+# each SparkMax id will be automatically registered in the code
 # without any additional configuration
 kShootMotorPorts = (19, 16, 1)
 kShootMotorInvert = (False, True, True)
 kShootMotorScale = (1.0, 1.0, 1.0)
 
-# Motor index 10 is the Vex
 kClimbingArmMotorPort = 4
 kClimbingArmMotorInvert = False
 
-# Encoders
+# Encoders - SparkMax
 kLeftEncoderPorts = (2, 3)
 kLeftEncoderReversed = False
 kRightEncoderPorts = (6, 7)
@@ -36,6 +35,9 @@ kRightEncoderReversed = True
 
 kEncoderCPR = 1024
 kWheelDiameterInches = 6
+
+# Falcon motors
+kFalconMotorIdx = 10
 
 # Assumes the encoders are directly mounted on the wheel shafts
 kEncoderDistancePerPulse = (kWheelDiameterInches * math.pi) / kEncoderCPR

@@ -64,25 +64,26 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftEncoder.setDistancePerPulse(const.kEncoderDistancePerPulse)
         self.rightEncoder.setDistancePerPulse(const.kEncoderDistancePerPulse)
         
-        # Vex falcon
-        self.falconMotor = hardware.TalonFX(10)
-        falcon_configs = configs.MotorOutputConfigs()
-        self.falconMotor.configurator.apply(falcon_configs)
-        self.falconRequest = controls.DutyCycleOut(0)       
+        # # Vex falcon TEST for now
+        # self.falconMotor = hardware.TalonFX(const.kFalconMotorIdx)
+        # falcon_configs = configs.MotorOutputConfigs()
+        # self.falconMotor.configurator.apply(falcon_configs)
+        # self.falconRequest = controls.DutyCycleOut(0)
 
     def tankDrive(self, leftSpeed: float, rightSpeed: float) -> None:
+        print (f"hi {leftSpeed} {rightSpeed}")
         """
         Drives the robot using tank controls.
 
         :param leftSpeed: the commanded movement of the left side
         :param rightSpeed: the commanded movement of the right side
         """
-        l = max(min(leftSpeed * leftSpeed, 1.0), -1.0)
-        l = -l if leftSpeed < 0 else l
-        r = max(min(rightSpeed * rightSpeed, 1.0), -1.0)
-        r = -r if rightSpeed < 0 else r
+        left = max(min(leftSpeed * leftSpeed, 1.0), -1.0)
+        left = -left if leftSpeed < 0 else left
+        right = max(min(rightSpeed * rightSpeed, 1.0), -1.0)
+        right = -right if rightSpeed < 0 else right
                 
-        self.drive.tankDrive(-l, -r)
+        self.drive.tankDrive(-left, -right)
 
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""
@@ -100,6 +101,6 @@ class DriveSubsystem(commands2.Subsystem):
         """
         self.drive.setMaxOutput(maxOutput)
         
-    def tweakFalcon(self, value: float):
-        self.falconRequest.output = value
-        self.falconMotor.set_control(self.falconRequest)
+    # def tweakFalcon(self, value: float):
+    #     self.falconRequest.output = value
+    #     self.falconMotor.set_control(self.falconRequest)

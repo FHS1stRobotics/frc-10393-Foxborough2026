@@ -6,6 +6,7 @@
 
 import wpilib
 import commands2
+import navx
 from robotcontainer import RobotContainer
 
 
@@ -27,13 +28,14 @@ class OurRobot(commands2.TimedCommandRobot):
         # autonomous chooser on the dashboard.
         self.container = RobotContainer()
         
-        wpilib.CameraServer().launch()
+        # For accessing the NavX onboard the Rio
+        self.ahrs = navx.AHRS.create_spi()
+        
+        # Camera setup
+        # wpilib.CameraServer.launch()
 
     def robotPeriodic(self) -> None:
         """This function is called periodically whenever the robot is on"""
-        
-        #print(f"LEFT: {self.container.driverController.getLeftTriggerAxis()}")
-        #print(f"RIGHT: {self.container.driverController.getRightTriggerAxis()}")
     
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
@@ -43,13 +45,13 @@ class OurRobot(commands2.TimedCommandRobot):
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        self.autonomousCommand = self.container.getAutonomousCommand()
-
+        self.autonomousCommand = self.container.getAutonomousCommand()    
+         
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
 
     def autonomousPeriodic(self) -> None:
-        """This function is called periodically during autonomous"""
+        """This function is called periodically during autonomous"""   
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when
