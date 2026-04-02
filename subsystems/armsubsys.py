@@ -12,23 +12,15 @@ from rev import (
     PersistMode
 )
 
-import constants as const
-from time import sleep
+import constants
 
 class ArmSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         super().__init__()
         
-        self.motor = SparkMax(const.kClimbingArmMotorPort, SparkMax.MotorType.kBrushless)    
-        cfg = SparkMaxConfig().inverted(const.kClimbingArmMotorInvert)
-        self.motor.configure(cfg,  ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
+        self.motor = SparkMax(constants.kClimbingArmMotorPort, SparkMax.MotorType.kBrushless)    
+        self.encoder = SparkMaxConfig().inverted(constants.kClimbingArmMotorInvert)
+        self.motor.configure(self.encoder,  ResetMode.kResetSafeParameters, PersistMode.kPersistParameters)
         
-    def setMotorSpeed(self, speed: float) -> commands2.Command:
-        return commands2.cmd.runOnce(
-            lambda: self.motor.set(speed)
-        )
-    
-    def setMotorSpeedForTime(self, timeSeconds: float, speed: float):
+    def setMotorSpeed(self, speed: float) -> None:
         self.motor.set(speed)
-        sleep(timeSeconds)
-        self.motor.set(0)

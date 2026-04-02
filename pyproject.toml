@@ -17,4 +17,6 @@ components = [
 
 # Other pip packages to install, such as vendor packages (each element
 # is equivalent to a line in requirements.txt)
-requires = ["robotpy-rev", "opencv-python", "phoenix6", "robotpy-navx"]
+# - opencv-python DOES NOT SUPPORT Python 3.14x
+# - RoboRIO  2026 REQUIRES         Python 3.14x
+requires = ["robotpy-rev", "phoenix6", "robotpy-navx"]

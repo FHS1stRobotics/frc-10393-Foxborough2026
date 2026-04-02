@@ -8,17 +8,19 @@ import wpilib
 
 import commands2
 import commands2.button
-import commands2.cmd
 
 import constants
 
 from subsystems.drivesubsys import DriveSubsystem
 from subsystems.shootsubsys import ShootSubsystem
 from subsystems.armsubsys import ArmSubsystem
-from commands2 import SequentialCommandGroup
 
-import commands.shootcmds
-import commands.armcmds
+from commands.drivecmds import TeleOpDrive, RateLimitDrive
+from commands.autocmds import AutoDrive
+from commands.shootcmds import Start
+from commands.armcmds import GoArm
+
+from commands2 import CommandScheduler
 
 class RobotContainer:
     """
@@ -33,47 +35,30 @@ class RobotContainer:
         self.driveSubsystem = DriveSubsystem()
         self.shootSubsystem = ShootSubsystem()
         self.armSubsystem = ArmSubsystem()
-        
-        self.shootSetAllMotorSpeed = commands.shootcmds.ShootCommands.setAllMotorSpeed
-        self.shootStopAllMotorSpeed = commands.shootcmds.ShootCommands.stopAllMotorSpeed
-        self.setArmMotorSpeedForTime = commands.armcmds.ArmCommands.setMotorSpeedForTime
 
-        # The driver's controller
-        self.driverController = commands2.button.CommandXboxController(
+        # The controller
+        self.controller = commands2.button.CommandXboxController(
             constants.kDriverControllerPort
-        )
-        
+        )        
         self.shooterOn = False
-        
-        self.feedCommand = SequentialCommandGroup(
-            self.shootSetAllMotorSpeed(self.shootSubsystem, self.driverController)
-        )
 
         # Configure the button bindings
         self.configureButtonBindings()
     
         # Configure default commands
         # Set the default drive command to tank drive
-        self.driveSubsystem.setDefaultCommand(self.buildTankDriveCommand());
+        self.driveSubsystem.setDefaultCommand(TeleOpDrive(self.driveSubsystem, self.controller))
         
         # Smart Dashboard Chooser
-        self.defaultAuto = commands2.cmd.run(lambda: self.driveSubsystem.tankDrive(0.05, 0.05), self.driveSubsystem)
-        self.anotherAuto = commands2.cmd.run(lambda: self.driveSubsystem.tankDrive(-0.05, -0.05), self.driveSubsystem)
         self.chooser = wpilib.SendableChooser()
-        self.chooser.setDefaultOption("Default Auto", self.defaultAuto)
-        self.chooser.addOption("Another auto",self.anotherAuto)
+        self.chooser.setDefaultOption("Default Auto", constants.fDefaultAutoSpeed)
+        self.chooser.addOption("Another auto",constants.fOtherAutoSpeed)
+        
+        # Dashboard stuff
+        wpilib.SmartDashboard.putData(CommandScheduler.getInstance())
 
         # Put the chooser on the dashboard
         wpilib.SmartDashboard.putData("Autonomous Commands", self.chooser)
-        
-    def buildTankDriveCommand(self) -> commands2.Command:
-        return commands2.cmd.run(
-                lambda: self.driveSubsystem.tankDrive(
-                    self.driverController.getLeftY(),
-                    self.driverController.getRightY(),
-                ),
-                self.driveSubsystem,
-            )
         
     def configureButtonBindings(self):
         """
@@ -83,66 +68,27 @@ class RobotContainer:
         """
         # limits max output to half when pressing leftbumper
         # are backslashes more readable?
-        self.driverController.leftBumper() \
+        self.controller.leftBumper() \
+            .whileTrue(RateLimitDrive(self.driveSubsystem, 0.5)) \
+            .whileFalse(RateLimitDrive(self.driveSubsystem, 1.0))
+
+        # Climing Arm Control
+        self.controller.a().whileTrue(GoArm(self.armSubsystem, constants.fClimbSpeedUp))        
+        self.controller.b().whileTrue(GoArm(self.armSubsystem, constants.fClimbSpeedDn))
+            
+        self.controller.rightTrigger(0.3).whileTrue(Start(self.shootSubsystem, self.controller))
+            
+        self.controller.rightBumper() \
             .onTrue(
-                commands2.cmd.runOnce(lambda: self.driveSubsystem.setMaxOutput(0.5))
+                commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(-0.15))
             ) \
             .onFalse(
-                commands2.cmd.runOnce(lambda: self.driveSubsystem.setMaxOutput(1))
+                commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(0.0))
             )
-            
-        self.driverController.a() \
-            .onTrue(
-                self.armSubsystem.setMotorSpeed(
-                    speed=-1.0
-                )
-            ) \
-            .onFalse(
-                self.armSubsystem.setMotorSpeed(
-                    speed=0.0
-                )
-            )
-        
-        self.driverController.b() \
-            .onTrue(
-                self.armSubsystem.setMotorSpeed(
-                    speed=1.0
-                )
-            ) \
-            .onFalse(
-                self.armSubsystem.setMotorSpeed(
-                    speed=0.0
-                )
-            )    
-        
-        self.driverController.x() \
-            .onTrue(
-                 commands2.cmd.runOnce(
-                    lambda: self.shootSubsystem.setAllMotorSpeed(1.0 if self.toggleShooter() else 0.0)
-                )
-            )
-            
-        self.driverController.rightTrigger(0.3) \
-            .toggleOnTrue(           
-                commands2.cmd.repeatingSequence(self.feedCommand)
-            ) \
-            .toggleOnFalse(         
-                commands2.cmd.runOnce(lambda: self.feedCommand.end(False))
-            )
-            
-        # self.driverController.rightBumper() \
-        #     .onTrue(
-        #         commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(0.5))
-        #     ) \
-        #     .onFalse(
-        #         commands2.cmd.runOnce(lambda: self.driveSubsystem.tweakFalcon(0.0))
-        #     )
             
     def toggleShooter(self) -> bool:
         self.shooterOn = not self.shooterOn
         return self.shooterOn
 
     def getAutonomousCommand(self) -> commands2.Command:
-        return commands2.cmd.run(
-            lambda: self.driveSubsystem.tankDrive(-0.05, -0.05), 
-            self.driveSubsystem)
+        return AutoDrive(self.driveSubsystem, self.chooser.getSelected())

@@ -5,13 +5,22 @@
 #
 
 import commands2
-import commands2.cmd
 
-from subsystems.armsubsys import ArmSubsystem
+from subsystems.drivesubsys import DriveSubsystem
 
-
-class AutoCommands:
-    def __init__(self) -> None:
-        raise Exception("This is a utility class!")
-
+class AutoDrive(commands2.Command):
+    def __init__(self, driveSystem : DriveSubsystem, speed : float) -> None:
+        super().__init__()
+        self.driveSystem = driveSystem
+        self.addRequirements(self.driveSystem)
+        self.speed = speed
+        
+    def execute(self) -> None:
+        self.driveSystem.tankDrive(self.speed, self.speed)
+        
+    def end(self, interrupted:bool) -> None:
+        self.driveSystem.stopTankDrive()
+        
+    def isFinished(self) -> bool:
+        return False
     

@@ -24,14 +24,18 @@ kShootMotorPorts = (19, 16, 1)
 kShootMotorInvert = (False, True, True)
 kShootMotorScale = (1.0, 1.0, 1.0)
 
+# Climbing arm stuff
 kClimbingArmMotorPort = 4
 kClimbingArmMotorInvert = False
+fClimbSpeedUp = 1.0
+fClimbSpeedDn = 1.0
 
 # Encoders - SparkMax
 kLeftEncoderPorts = (2, 3)
 kLeftEncoderReversed = False
 kRightEncoderPorts = (6, 7)
 kRightEncoderReversed = True
+kDriveMotorSlewRate = 2
 
 kEncoderCPR = 1024
 kWheelDiameterInches = 6
@@ -47,3 +51,7 @@ kDriverControllerPort = 0
 
 # Webcam
 kWebcamID = 0
+
+# AutoCommand speeds
+fDefaultAutoSpeed = 0.5
+fOtherAutoSpeed = -0.5

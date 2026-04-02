@@ -8,7 +8,8 @@ import wpilib
 import commands2
 import navx
 from robotcontainer import RobotContainer
-
+from wpilib import PWMSparkMax
+from wpiutil import SendableRegistry
 
 class OurRobot(commands2.TimedCommandRobot):
     """
@@ -33,25 +34,17 @@ class OurRobot(commands2.TimedCommandRobot):
         
         # Camera setup
         # wpilib.CameraServer.launch()
-
-    def robotPeriodic(self) -> None:
-        """This function is called periodically whenever the robot is on"""
-    
-    def disabledInit(self) -> None:
-        """This function is called once each time the robot enters Disabled mode."""
-
-    def disabledPeriodic(self) -> None:
-        """This function is called periodically when disabled"""
+         
+        # Motor Display
+        leftDrive1 = PWMSparkMax(2)
+        SendableRegistry.setName(leftDrive1, "Left Drive", "Motor 2")
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
-        self.autonomousCommand = self.container.getAutonomousCommand()    
+        self.autonomousCommand = self.container.getAutonomousCommand()
          
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
-
-    def autonomousPeriodic(self) -> None:
-        """This function is called periodically during autonomous"""   
 
     def teleopInit(self) -> None:
         # This makes sure that the autonomous stops running when
@@ -67,6 +60,3 @@ class OurRobot(commands2.TimedCommandRobot):
     def testInit(self) -> None:
         # Cancels all running commands at the start of test mode
         commands2.CommandScheduler.getInstance().cancelAll()
-
-    def testPeriodic(self) -> None:
-        """This function is called periodically during test mode"""

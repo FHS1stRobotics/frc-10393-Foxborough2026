@@ -2,11 +2,24 @@
 - actually use the venv :DDDDDDD
 - Pushups
 
-# stuff did
-- py -3 -m pip install phoenix6
+# env stuff did
+- py -3 -m venv .venv
+- py -3 -m
+- py -3 -m pop install robotpy
+- py -3 -m pop install robotpy-rev
 - py -3 -m pip install robotpy-navx
-- be sure to updated requires in pyproject.toml- requires = ["robotpy-rev","opencv-python","phoenix6","robotpy-navx"]
-- phoenix6 requires 2026.2.1.1 - DO NOT UPGARDE IT
+- py -3 -m pip install phoenix6
+-- phoenix6 requires 2026.2.1.1 (NOT 2026.2.2) - DO NOT UPGARDE IT
+
+# env stuff NOT DID
+- py -3 -m pip install opencv-python  
+-- opencv-python hates py 3.14 and RoboRIO 2026 requries 3.14 so ...
+
+# build stuff did
+- be sure to updated requires in pyproject.toml- requires = ["robotpy-rev","phoenix6","robotpy-navx"] 
+- py -3 -m robotpy sync
+- py -3 -m robotpy deploy --skip-tests
+
 
 # Functions
 Features

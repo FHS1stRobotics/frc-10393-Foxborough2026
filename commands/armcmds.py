@@ -4,18 +4,24 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
-import commands2
 import commands2.cmd
 
 from subsystems.armsubsys import ArmSubsystem
 
-
-class ArmCommands:
-    def __init__(self) -> None:
-        raise Exception("This is a utility class!")
-
-    @staticmethod
-    def setMotorSpeedForTime(armSubsystem: ArmSubsystem, timeSeconds: float, speed: float) -> commands2.Command:
-        return commands2.cmd.runOnce(
-            lambda: armSubsystem.setMotorSpeedForTime(timeSeconds, speed)
-        )
+class GoArm(commands2.Command):
+    def __init__(self, armSystem : ArmSubsystem, speed : float) -> None:
+        super().__init__()
+        self.armSystem = armSystem
+        self.addRequirements(self.armSystem)
+        self.speed = speed
+        
+    def execute(self) -> None:
+        self.armSystem.setMotorSpeed(self.speed)
+        
+    def end(self, interrupted:bool) -> None:
+        self.armSystem.setMotorSpeed(self.speed)
+        
+    def isFinished(self) -> bool:
+        return False
+    
+    

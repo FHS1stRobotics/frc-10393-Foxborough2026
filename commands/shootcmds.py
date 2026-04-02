@@ -9,18 +9,17 @@ import commands2.cmd
 
 from subsystems.shootsubsys import ShootSubsystem
 
-class ShootCommands:
-    def __init__(self) -> None:
-        raise Exception("This is a utility class!")
+class Start(commands2.Command):
+    def __init__(self, system: ShootSubsystem, control : commands2.button.CommandXboxController) -> None:
+        super().__init__()
+        self.shootSubsystem = system
+        self.controller = control
 
-    @staticmethod
-    def setAllMotorSpeed(shootSubsystem: ShootSubsystem, driver : commands2.button.CommandXboxController) -> commands2.Command:
-        return commands2.cmd.runOnce(
-            lambda: shootSubsystem.setAllMotorSpeed(driver.getRightTriggerAxis())
-        )
-
-    @staticmethod
-    def stopAllMotorSpeed(shootSubsystem: ShootSubsystem) -> commands2.Command:
-        return commands2.cmd.runOnce(
-            lambda: shootSubsystem.setAllMotorSpeed(0)
-        )
+    def execute(self) -> None:
+        self.shootSubsystem.setAllMotorSpeed(self.controller.getRightTriggerAxis())
+        
+    def end(self, interrupted:bool) -> None:
+        self.shootSubsystem.setAllMotorSpeed(0)
+        
+    def isFinished(self) -> bool:
+        return False
